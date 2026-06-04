@@ -38,9 +38,10 @@ Jules не должен спрашивать пользователя "что д
 2. CI failures
 3. `docs/cognitive_architecture.md`
 4. `docs/jules_autonomous_loop.md`
-5. `backlog.md`
-6. TODO/FIXME comments
-7. recurring errors from previous PRs
+5. `docs/hermes_inspired_feature_plan.md`
+6. `backlog.md`
+7. TODO/FIXME comments
+8. recurring errors from previous PRs
 
 Если явных задач нет, Jules создает пачку задач сам.
 

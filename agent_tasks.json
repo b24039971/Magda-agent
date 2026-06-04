@@ -88,6 +88,23 @@
       ]
     },
     {
+      "id": "hermes-inspired-feature-plan",
+      "status": "done",
+      "area": "architecture",
+      "risk": "low",
+      "title": "Document Hermes-inspired feature roadmap",
+      "description": "Study Hermes Agent patterns and adapt the useful ideas into Magda's biological cognitive architecture without copying implementation details.",
+      "allowed_paths": [
+        "docs/**",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "docs/hermes_inspired_feature_plan.md exists",
+        "plan maps Hermes-style agent operations to Magda brain modules",
+        "agent_tasks.json contains concrete follow-up tasks from the plan"
+      ]
+    },
+    {
       "id": "cross-platform-skill-imports",
       "status": "todo",
       "area": "stabilization",
@@ -207,6 +224,246 @@
         "stop wakes the background loop without waiting for the full interval",
         "start/stop remains idempotent enough for tests",
         "existing reflection behavior remains compatible"
+      ]
+    },
+    {
+      "id": "command-registry",
+      "status": "todo",
+      "area": "control-surface",
+      "risk": "medium",
+      "title": "Add shared command registry",
+      "description": "Create a central command registry so Telegram/API/future CLI commands share one definition for names, aliases, descriptions, risk and handlers.",
+      "allowed_paths": [
+        "magda_agent/commands/**",
+        "magda_agent/main.py",
+        "magda_agent/api.py",
+        "tests/test_commands.py",
+        "docs/**",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "commands have canonical names, aliases, descriptions and risk levels",
+        "existing /state behavior is represented through the registry or an adapter",
+        "command handlers can be reused outside Telegram",
+        "unknown commands produce a clear response"
+      ]
+    },
+    {
+      "id": "doctor-command",
+      "status": "todo",
+      "area": "diagnostics",
+      "risk": "low",
+      "title": "Implement doctor diagnostics command",
+      "description": "Add a diagnostics surface that reports environment readiness, optional dependency status, API health, memory backend availability, sandbox support and task manifest validity.",
+      "allowed_paths": [
+        "magda_agent/diagnostics/**",
+        "magda_agent/commands/**",
+        "magda_agent/api.py",
+        "tests/test_diagnostics.py",
+        "docs/**",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "doctor report includes dependency and platform checks",
+        "doctor report includes task manifest validation status",
+        "doctor report does not leak secrets",
+        "doctor command is callable through the shared command registry"
+      ]
+    },
+    {
+      "id": "session-store-sqlite",
+      "status": "todo",
+      "area": "memory",
+      "risk": "medium",
+      "title": "Add SQLite session store for raw conversation history",
+      "description": "Introduce a durable session log for raw messages and tool results so semantic/vector memory is not the only source of history.",
+      "allowed_paths": [
+        "magda_agent/memory/session_store.py",
+        "magda_agent/memory/**",
+        "tests/test_session_store.py",
+        "docs/**",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "messages can be appended by session_id and user_id",
+        "messages can be listed by session",
+        "store uses sqlite from the standard library",
+        "storage path is configurable and safe for Docker/local runs"
+      ]
+    },
+    {
+      "id": "memory-search-command",
+      "status": "todo",
+      "area": "memory",
+      "risk": "medium",
+      "title": "Add searchable memory command",
+      "description": "Expose session history search through the command registry using SQLite FTS when available and a safe fallback when FTS is unavailable.",
+      "allowed_paths": [
+        "magda_agent/memory/session_store.py",
+        "magda_agent/commands/**",
+        "tests/test_session_store.py",
+        "tests/test_commands.py",
+        "docs/**",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "search returns matching messages for a user/session scope",
+        "FTS search is used when SQLite supports it",
+        "fallback search works when FTS is unavailable",
+        "search command does not reveal another user's messages"
+      ]
+    },
+    {
+      "id": "skill-metadata",
+      "status": "todo",
+      "area": "skills",
+      "risk": "medium",
+      "title": "Add skill metadata and capability descriptions",
+      "description": "Extend SkillRegistry so every skill has explicit metadata: risk level, enabled state, required environment variables, side effects and user-facing description.",
+      "allowed_paths": [
+        "magda_agent/skills/registry.py",
+        "magda_agent/skills/__init__.py",
+        "tests/test_skills_registry.py",
+        "docs/**",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "each registered skill has metadata",
+        "skills can be listed with risk and enabled state",
+        "missing required env vars mark a skill unavailable",
+        "existing skill execution remains backward compatible"
+      ]
+    },
+    {
+      "id": "skill-policy-gates",
+      "status": "todo",
+      "area": "safety",
+      "risk": "medium",
+      "title": "Gate skill execution through policy checks",
+      "description": "Require skill risk and enabled state checks before Planner or Consciousness can execute a tool call.",
+      "allowed_paths": [
+        "magda_agent/skills/registry.py",
+        "magda_agent/safety/**",
+        "magda_agent/consciousness/core.py",
+        "tests/test_skills_registry.py",
+        "tests/test_risk_system.py",
+        "docs/**",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "disabled skills cannot be executed",
+        "external-effect skills require explicit policy approval",
+        "planner receives clear errors for blocked skills",
+        "safe low-risk skills still execute normally"
+      ]
+    },
+    {
+      "id": "procedure-trace-store",
+      "status": "todo",
+      "area": "learning",
+      "risk": "medium",
+      "title": "Record procedure traces from successful tasks",
+      "description": "Store compact traces of plans, skill calls, results, evaluations and lessons so Magda can learn reusable procedures from successful work.",
+      "allowed_paths": [
+        "magda_agent/learning/**",
+        "magda_agent/metacognition/**",
+        "magda_agent/planning/**",
+        "tests/test_learning/**",
+        "docs/**",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "successful skill usage can produce a procedure trace",
+        "trace includes task summary, steps, results and evaluator score",
+        "failed traces are stored separately or marked clearly",
+        "traces are user/session aware"
+      ]
+    },
+    {
+      "id": "skill-curator",
+      "status": "todo",
+      "area": "learning",
+      "risk": "medium",
+      "title": "Add Skill Curator for procedural memory",
+      "description": "Create a curator that reviews procedure traces and proposes reusable skill drafts without auto-enabling them.",
+      "allowed_paths": [
+        "magda_agent/learning/**",
+        "magda_agent/subconsciousness/**",
+        "magda_agent/skills/**",
+        "tests/test_learning/**",
+        "docs/**",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "curator can propose a skill candidate from repeated successful traces",
+        "candidate skills are disabled by default",
+        "curator output is structured and testable",
+        "no generated code is executed automatically"
+      ]
+    },
+    {
+      "id": "scheduler-service",
+      "status": "todo",
+      "area": "scheduling",
+      "risk": "medium",
+      "title": "Add scheduler service for internal routines",
+      "description": "Introduce a lightweight scheduler for recurring internal jobs such as reflection, memory consolidation, Jules task replenishment and periodic diagnostics.",
+      "allowed_paths": [
+        "magda_agent/scheduling/**",
+        "magda_agent/api.py",
+        "magda_agent/subconsciousness/**",
+        "tests/test_scheduler.py",
+        "docs/**",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "scheduler can register named recurring jobs",
+        "jobs can be started and stopped cleanly",
+        "nightly reflection and task replenishment can be represented as jobs",
+        "scheduler does not block FastAPI shutdown"
+      ]
+    },
+    {
+      "id": "trajectory-compression",
+      "status": "todo",
+      "area": "reflection",
+      "risk": "medium",
+      "title": "Add trajectory compression for task learning",
+      "description": "Compress long action/tool histories into compact lessons that can feed Subconsciousness, procedural memory and Jules task generation.",
+      "allowed_paths": [
+        "magda_agent/subconsciousness/**",
+        "magda_agent/learning/**",
+        "tests/test_subconsciousness.py",
+        "tests/test_learning/**",
+        "docs/**",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "compressor accepts a list of events or steps",
+        "output includes summary, decisions, failures, commands and lessons",
+        "compressor has a deterministic non-LLM fallback",
+        "LLM-based compression remains mockable in tests"
+      ]
+    },
+    {
+      "id": "subagent-interface",
+      "status": "todo",
+      "area": "cognition",
+      "risk": "medium",
+      "title": "Define subagent interface for specialist workstreams",
+      "description": "Add a minimal interface for specialist subagents such as CriticAgent, ResearchAgent, TestAgent and MemoryCuratorAgent without enabling uncontrolled parallel execution.",
+      "allowed_paths": [
+        "magda_agent/agents/**",
+        "magda_agent/consciousness/**",
+        "tests/test_subagents.py",
+        "docs/**",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "subagent interface has typed input/output contracts",
+        "critic agent can review a plan or diff summary",
+        "subagents cannot execute external-effect skills without policy",
+        "main consciousness can collect subagent results without blocking indefinitely"
       ]
     },
     {
