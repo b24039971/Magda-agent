@@ -3,7 +3,7 @@ import logging
 from typing import Optional, Dict, Any
 
 from magda_agent.llm_client import LLMClient
-from magda_agent.memory.storage import MemorySystem
+from magda_agent.memory.core import MemorySystem
 from magda_agent.emotions.engine import PADState
 
 class Evaluator:

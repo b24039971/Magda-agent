@@ -5,12 +5,14 @@ from magda_agent.attention.workspace import GlobalWorkspace
 
 from magda_agent.llm_client import LLMClient
 from magda_agent.emotions.engine import EmotionalEngine
-from magda_agent.memory.storage import MemorySystem
+from magda_agent.memory.core import MemorySystem
 from magda_agent.skills.registry import SkillRegistry
 from magda_agent.planning.planner import Planner
-from magda_agent.memory.long_term import LongTermMemory
+from magda_agent.memory.semantic import SemanticMemory
+from magda_agent.memory.procedural import ProceduralMemory
 from magda_agent.metacognition.evaluator import Evaluator
-from magda_agent.learning.habits import HabitTracker
+from magda_agent.memory.semantic import SemanticMemory
+from magda_agent.metacognition.evaluator import Evaluator
 from magda_agent.emotions.attachment import AttachmentModel
 from magda_agent.thalamus.router import Thalamus
 from magda_agent.action.selector import BasalGanglia
@@ -31,9 +33,9 @@ class Consciousness:
         memory: MemorySystem,
         skills: SkillRegistry,
         planner: Optional[Planner] = None,
-        long_term_memory: Optional[LongTermMemory] = None,
+        long_term_memory: Optional[SemanticMemory] = None,
+        habit_tracker: Optional[ProceduralMemory] = None,
         evaluator: Optional[Evaluator] = None,
-        habit_tracker: Optional[HabitTracker] = None,
         attachment: Optional[AttachmentModel] = None,
         thalamus: Optional[Thalamus] = None,
         basal_ganglia: Optional[BasalGanglia] = None,
@@ -50,8 +52,8 @@ class Consciousness:
         self.skills = skills
         self.planner = planner
         self.long_term_memory = long_term_memory
-        self.evaluator = evaluator
         self.habit_tracker = habit_tracker
+        self.evaluator = evaluator
         self.attachment = attachment
         self.thalamus = thalamus
         self.basal_ganglia = basal_ganglia

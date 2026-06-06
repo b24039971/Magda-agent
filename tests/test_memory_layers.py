@@ -1,13 +1,13 @@
 import pytest
 import os
 import shutil
-from magda_agent.memory.long_term import LongTermMemory
+from magda_agent.memory.semantic import SemanticMemory
 
 @pytest.fixture
 def temp_memory(tmp_path):
-    """Fixture to create and clean up a temporary LongTermMemory instance."""
-    persist_dir = str(tmp_path / "test_long_term_db")
-    memory = LongTermMemory(persist_directory=persist_dir)
+    """Fixture to create and clean up a temporary SemanticMemory instance."""
+    persist_dir = str(tmp_path / "test_semantic_db")
+    memory = SemanticMemory(persist_directory=persist_dir)
     yield memory
 
 def test_store_and_recall(temp_memory):

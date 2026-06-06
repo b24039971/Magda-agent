@@ -3,7 +3,8 @@ from unittest.mock import AsyncMock, MagicMock
 from magda_agent.subconsciousness.reflection import Subconsciousness
 from magda_agent.llm_client import LLMClient
 from magda_agent.emotions.engine import EmotionalEngine
-from magda_agent.memory.storage import MemorySystem, MemoryEntry
+from magda_agent.memory.core import MemorySystem
+from magda_agent.memory.working import MemoryEntry
 
 @pytest.fixture
 def mock_llm_client():
@@ -32,6 +33,7 @@ def mock_emotions():
 def mock_memory_system():
     mock = MagicMock(spec=MemorySystem)
     mock.short_term = [MemoryEntry(content="Test content 1", timestamp=1000, importance=0.5, emotional_state=MagicMock())]
+    mock.working = MagicMock()
     return mock
 
 @pytest.fixture
@@ -53,7 +55,7 @@ async def test_subconsciousness_reflect(subconsciousness, mock_llm_client, mock_
     await subconsciousness.reflect()
 
     # Verify memory consolidation was called
-    mock_memory_system.consolidate.assert_called_once()
+    mock_memory_system.working.consolidate.assert_called_once()
 
     # Verify LLM was called
     mock_llm_client.chat_completion.assert_called_once()
@@ -76,7 +78,7 @@ async def test_subconsciousness_reflect_no_short_term(subconsciousness, mock_llm
     await subconsciousness.reflect()
 
     # Verify memory consolidation was NOT called
-    mock_memory_system.consolidate.assert_not_called()
+    mock_memory_system.working.consolidate.assert_not_called()
 
     # Verify LLM was NOT called
     mock_llm_client.chat_completion.assert_not_called()

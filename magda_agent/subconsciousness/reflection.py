@@ -4,7 +4,7 @@ import logging
 from typing import List
 from magda_agent.llm_client import LLMClient
 from magda_agent.emotions.engine import EmotionalEngine
-from magda_agent.memory.storage import MemorySystem
+from magda_agent.memory.core import MemorySystem
 
 class Subconsciousness:
     """
@@ -48,7 +48,7 @@ class Subconsciousness:
             return
 
         # 1. Consolidate memory (standard logic)
-        self.memory.consolidate()
+        self.memory.working.consolidate()
 
         # 2. Self-Reflection reasoning
         # Magda looks at her own performance and feels "proud" or "worried"

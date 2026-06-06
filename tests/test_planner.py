@@ -67,7 +67,7 @@ def test_mark_step_completed():
 async def test_consciousness_executes_plan():
     from magda_agent.consciousness.core import Consciousness
     from magda_agent.emotions.engine import EmotionalEngine
-    from magda_agent.memory.storage import MemorySystem
+    from magda_agent.memory.core import MemorySystem
 
     mock_llm = MagicMock(spec=LLMClient)
     mock_llm.get_system_prompt.return_value = "System prompt"
