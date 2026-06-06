@@ -127,7 +127,7 @@
     },
     {
       "id": "memory-layer-split",
-      "status": "todo",
+      "status": "done",
       "area": "memory",
       "risk": "medium",
       "title": "Split memory into working, episodic, semantic and procedural layers",
@@ -275,6 +275,57 @@
         "Sandbox catches execution errors internally",
         "An internal LLM call generates a corrected script based on stderr",
         "Fails gracefully after max_retries without crashing the main loop"
+      ]
+    },
+    {
+      "id": "trends-browser-use",
+      "status": "todo",
+      "area": "skills",
+      "risk": "medium",
+      "title": "Implement computer use and browser skills based on Claude Code trends",
+      "description": "Add capabilities for the agent to navigate web pages using Playwright, similar to Claude's computer use. It should evaluate the current screen state and click elements.",
+      "allowed_paths": [
+        "magda_agent/skills/browser.py",
+        "tests/test_skills/test_browser.py",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Browser tool successfully loads a local web page and interacts with elements.",
+        "Tests pass with mocked LLM calls and valid HTML parsing."
+      ]
+    },
+    {
+      "id": "trends-swarm-architecture",
+      "status": "todo",
+      "area": "architecture",
+      "risk": "high",
+      "title": "Support agent swarms and routine hand-offs like OpenAI Swarm",
+      "description": "Enable Magda to spawn sub-agents (e.g., researcher, coder) to delegate tasks. Develop a hand-off mechanism to pass context cleanly.",
+      "allowed_paths": [
+        "magda_agent/swarm/**",
+        "tests/test_swarm.py",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "A coordinator agent can instantiate sub-agents.",
+        "A sub-agent can return context to the main agent upon task completion."
+      ]
+    },
+    {
+      "id": "trends-reflection-artifacts",
+      "status": "todo",
+      "area": "reflection",
+      "risk": "low",
+      "title": "Artifact-based Reflection",
+      "description": "Output reflective lessons and procedural patterns to dedicated Markdown artifacts instead of only ChromaDB, making knowledge more transparent for human review (similar to open agent transparency trends).",
+      "allowed_paths": [
+        "magda_agent/subconsciousness/reflection.py",
+        "tests/test_subconsciousness_artifacts.py",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "When subconsciousness reflects, it generates an artifact in the repo (e.g. artifacts/lesson_*.md).",
+        "Artifact creation is testable without network calls."
       ]
     }
   ]

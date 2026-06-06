@@ -3,7 +3,7 @@ import json
 from unittest.mock import AsyncMock, MagicMock
 from magda_agent.metacognition.evaluator import Evaluator
 from magda_agent.llm_client import LLMClient
-from magda_agent.memory.storage import MemorySystem
+from magda_agent.memory.core import MemorySystem
 
 @pytest.fixture
 def mock_llm_client():

@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock
 from magda_agent.emotions.attachment import AttachmentModel
 from magda_agent.consciousness.core import Consciousness
 from magda_agent.emotions.engine import EmotionalEngine
-from magda_agent.memory.storage import MemorySystem
+from magda_agent.memory.core import MemorySystem
 from magda_agent.skills.registry import SkillRegistry
 
 def test_attachment_progression():
@@ -52,7 +52,7 @@ async def test_consciousness_attachment_integration():
     emotions = EmotionalEngine()
     emotions.get_summary = MagicMock(return_value="Current Emotion: Neutral")
 
-    memory = MemorySystem()
+    memory = MemorySystem(persist_directory=":memory:")
     skills = SkillRegistry()
 
     attachment = AttachmentModel()
