@@ -105,7 +105,7 @@
     },
     {
       "id": "global-workspace",
-      "status": "todo",
+      "status": "done",
       "area": "cognition",
       "risk": "medium",
       "title": "Introduce Global Workspace",
@@ -218,6 +218,63 @@
       "acceptance": [
         "Telemetry module logs usage frequency of tools",
         "Reasoning paths are structurally recorded for later Subconscious reflection"
+      ]
+    },
+    {
+      "id": "dynamic-topology-routing",
+      "status": "todo",
+      "area": "skills",
+      "risk": "medium",
+      "title": "Dynamic Topology Tool Routing",
+      "description": "Implement a dynamic routing layer inspired by Hermes, allowing the agent to self-organize which tools should be loaded into context based on the current workspace focus rather than static injection.",
+      "allowed_paths": [
+        "magda_agent/skills/router.py",
+        "magda_agent/skills/registry.py",
+        "tests/test_skill_router.py",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "SkillRegistry supports dynamic contextual filtering",
+        "Router evaluates workspace focus to limit active tool schema size",
+        "Reduces LLM token usage for irrelevant tools"
+      ]
+    },
+    {
+      "id": "streaming-token-output",
+      "status": "todo",
+      "area": "api",
+      "risk": "medium",
+      "title": "Streaming Event Response",
+      "description": "Refactor Consciousness API to support streaming tokens and intermediate thought events via Server-Sent Events (SSE), inspired by OpenAI Agents SDK.",
+      "allowed_paths": [
+        "magda_agent/api.py",
+        "magda_agent/llm_client.py",
+        "magda_agent/consciousness/core.py",
+        "tests/test_streaming.py",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "API exposes a /process_stream endpoint",
+        "LLMClient supports an async token generator",
+        "Consumers can stream partial thoughts and final responses"
+      ]
+    },
+    {
+      "id": "self-correcting-interpreter",
+      "status": "todo",
+      "area": "safety",
+      "risk": "medium",
+      "title": "Self-Correcting Code Interpreter Loop",
+      "description": "Enhance the Sandbox skill with an internal retry loop. If a script fails, the agent automatically reflects on the stderr traceback and attempts a fix up to 3 times, inspired by OpenClaw and Claude Code.",
+      "allowed_paths": [
+        "magda_agent/skills/sandbox.py",
+        "tests/test_sandbox_correction.py",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Sandbox catches execution errors internally",
+        "An internal LLM call generates a corrected script based on stderr",
+        "Fails gracefully after max_retries without crashing the main loop"
       ]
     }
   ]

@@ -1,6 +1,7 @@
 import logging
 from typing import List, Dict, Any, Optional
 from magda_agent.attention.salience import SalienceNetwork
+from magda_agent.attention.workspace import GlobalWorkspace
 
 from magda_agent.llm_client import LLMClient
 from magda_agent.emotions.engine import EmotionalEngine
@@ -40,7 +41,8 @@ class Consciousness:
         insula: Optional[Insula] = None,
         brainstem: Optional[Brainstem] = None,
         pineal_gland: Optional[PinealGland] = None,
-        salience_network: Optional[SalienceNetwork] = None
+        salience_network: Optional[SalienceNetwork] = None,
+        global_workspace: Optional[GlobalWorkspace] = None
     ):
         self.llm = llm
         self.emotions = emotions
@@ -58,6 +60,7 @@ class Consciousness:
         self.brainstem = brainstem
         self.pineal_gland = pineal_gland
         self.salience_network = salience_network
+        self.global_workspace = global_workspace
 
     async def process_input(self, user_input: str, user_id: Optional[int] = None) -> str:
         logging.info(f"Consciousness processing: {user_input}")
@@ -65,16 +68,49 @@ class Consciousness:
         if self.thalamus and not self.thalamus.filter_input(user_input):
             return "Message ignored by Thalamus."
 
+        # Collect candidate events for the Global Workspace
+        candidates = []
+        user_input_candidate = {
+            "source": "user",
+            "content": user_input,
+            "salience": 0.1,  # default base salience
+            "user_id": user_id
+        }
+
         if self.salience_network:
             salience_result = self.salience_network.score_event(user_input)
-            logging.info(f"Salience score: {salience_result['score']} - {salience_result['explanation']}")
+            logging.info(f"User Input Salience: {salience_result['score']} - {salience_result['explanation']}")
+            user_input_candidate["salience"] = salience_result["score"]
+
+        candidates.append(user_input_candidate)
+
+        # In the future, add other candidates from drives, memory conflicts, etc.
+        # if self.hypothalamus and self.hypothalamus.boredom > 0.8:
+        #     candidates.append({"source": "internal_drive", "content": "I am feeling bored. Maybe I should explore something new.", "salience": 0.5})
+
+        # Process through Global Workspace if available
+        focused_input = user_input
+        if self.global_workspace:
+            self.global_workspace.clear()
+            for c in candidates:
+                self.global_workspace.add_candidate(c)
+
+            focused_event = self.global_workspace.select_focus()
+            if focused_event:
+                focused_input = focused_event.get("content", user_input)
+                logging.info(f"Global Workspace focused on: {focused_event.get('source')} - {focused_input}")
+            else:
+                logging.warning("Global Workspace returned no focus. Falling back to raw user input.")
+        else:
+            # If no workspace, the focused input is just the user input
+            focused_input = user_input
 
 
         # 0. Brainstem Autonomic Reflexes
         if self.brainstem:
-            reflex_response = self.brainstem.process_reflex(user_input)
+            reflex_response = self.brainstem.process_reflex(focused_input)
             if reflex_response:
-                logging.info(f"Brainstem reflex triggered for: {user_input}")
+                logging.info(f"Brainstem reflex triggered for: {focused_input}")
                 return reflex_response
 
         # 1. Perception & Emotion Update (Initial reaction)
@@ -99,11 +135,11 @@ class Consciousness:
                 self.emotions.update(v_shift, a_shift, d_shift)
 
         # 2. Memory Retrieval
-        relevant_memories = self.memory.retrieve_relevant(user_input, user_id=user_id)
+        relevant_memories = self.memory.retrieve_relevant(focused_input, user_id=user_id)
         context_str = "\n".join([f"- {m.content}" for m in relevant_memories])
 
         if self.long_term_memory:
-            long_term_memories = self.long_term_memory.recall(user_input, user_id=user_id)
+            long_term_memories = self.long_term_memory.recall(focused_input, user_id=user_id)
             if long_term_memories:
                 context_str += "\nLong Term Memories:\n" + "\n".join([f"- {m}" for m in long_term_memories])
 
@@ -112,7 +148,7 @@ class Consciousness:
         if self.planner:
             # Only generate a new plan if we don't have an active one
             if not self.planner.get_current_plan():
-                await self.planner.generate_plan(user_input, user_id=user_id)
+                await self.planner.generate_plan(focused_input, user_id=user_id)
 
             plan = self.planner.get_current_plan()
             if plan:
@@ -168,7 +204,7 @@ class Consciousness:
 
         messages = [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_input}
+            {"role": "user", "content": focused_input}
         ]
 
         # Determine if a skill should be used (Simplified logic for PoC)
@@ -187,7 +223,12 @@ class Consciousness:
         response = await self.llm.chat_completion(messages)
 
         # 5. Post-processing & Memory Storage
-        memory_content = f"User said: {user_input} | I replied: {response}"
+        # Include original user input in memory if the focus was internal
+        if focused_input != user_input:
+            memory_content = f"Context: User said '{user_input}', but focused on '{focused_input}' | I replied: {response}"
+        else:
+            memory_content = f"User said: {user_input} | I replied: {response}"
+
         self.memory.add_memory(
             content=memory_content,
             importance=0.5,
@@ -204,7 +245,7 @@ class Consciousness:
 
         # 6. Metacognition (Self-Evaluation)
         if self.evaluator:
-            await self.evaluator.evaluate_response(user_input, response)
+            await self.evaluator.evaluate_response(focused_input, response)
 
             # Record habit if we have an evaluation and a tracker
             if self.habit_tracker and self.evaluator.last_evaluation:
@@ -213,7 +254,7 @@ class Consciousness:
                     for step in self.planner.completed_steps:
                         skill = step.get("skill")
                         if skill:
-                            self.habit_tracker.record_usage(user_input, skill, float(avg_score), user_id=user_id)
+                            self.habit_tracker.record_usage(focused_input, skill, float(avg_score), user_id=user_id)
 
         return response
 
