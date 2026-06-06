@@ -150,7 +150,7 @@
     },
     {
       "id": "subconscious-consolidation",
-      "status": "todo",
+      "status": "done",
       "area": "reflection",
       "risk": "medium",
       "title": "Upgrade Subconsciousness into structured consolidation",
@@ -167,6 +167,42 @@
         "lessons are stored separately from raw conversation",
         "recurring failures can create proposed tasks",
         "LLM calls remain mocked in tests"
+      ]
+    },
+    {
+      "id": "trends-mcp-integration",
+      "status": "todo",
+      "area": "skills",
+      "risk": "medium",
+      "title": "Integrate Model Context Protocol (MCP)",
+      "description": "Inspired by recent agent tools (like Claude Code and OpenAI SDKs adopting unified contexts), implement an MCP client to allow Magda to securely interact with local resources and unified remote data sources.",
+      "allowed_paths": [
+        "magda_agent/mcp/**",
+        "magda_agent/skills/registry.py",
+        "tests/test_mcp.py",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "MCP Client can connect to a local MCP server",
+        "Resources exposed by MCP are registered as dynamic tools in SkillRegistry"
+      ]
+    },
+    {
+      "id": "trends-json-schema-enforcement",
+      "status": "todo",
+      "area": "api",
+      "risk": "low",
+      "title": "Strict JSON Schema Enforcement for Tool Calls",
+      "description": "Inspired by OpenAI's Structured Outputs, enforce strict Pydantic model validation on all incoming tool calls before executing the skill, wrapping failures in a recoverable Subconsciousness reflex.",
+      "allowed_paths": [
+        "magda_agent/skills/validator.py",
+        "magda_agent/skills/registry.py",
+        "tests/test_skill_validation.py",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "All skills require a defined Pydantic schema",
+        "Invalid arguments trigger an automatic retry via self-correcting prompt without crashing"
       ]
     },
     {

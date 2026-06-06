@@ -58,13 +58,17 @@ class Subconsciousness:
         Recent events:
         {memories_text}
 
-        Based on these events, perform a brief self-reflection.
-        How are you doing? Are you fulfilling your goals as an AGI?
+        Based on these events, perform a structured self-reflection.
+        Analyze your performance, identify any key lessons learned, spot any recurring failures or anti-patterns,
+        and propose any tasks that would help improve your capabilities or resolve issues.
         Suggest a minor adjustment to your emotional state (Pleasure, Arousal, Dominance) as a result of this reflection.
 
         You MUST respond ONLY with a valid JSON object in the exact format below, with no additional text:
         {{
-            "reflection": "Your textual self-reflection here",
+            "summary": "Your brief textual self-reflection summary here",
+            "lessons": ["lesson 1", "lesson 2"],
+            "anti_patterns": ["anti pattern 1"],
+            "proposed_tasks": ["proposed task 1"],
             "pad_adjustment": {{
                 "p": 0.0,
                 "a": 0.0,
@@ -78,7 +82,7 @@ class Subconsciousness:
 
         logging.info(f"Raw reflection response: {raw_response}")
 
-        reflection_text = "Parsed reflection failed."
+        summary_text = "Parsed reflection failed."
         p_adj, a_adj, d_adj = 0.02, -0.01, 0.05  # Defaults
 
         try:
@@ -92,11 +96,25 @@ class Subconsciousness:
                 cleaned_response = cleaned_response[:-3]
 
             parsed_data = json.loads(cleaned_response.strip())
-            reflection_text = parsed_data.get("reflection", "No reflection text provided.")
+            summary_text = parsed_data.get("summary", "No summary text provided.")
             pad_adj = parsed_data.get("pad_adjustment", {})
             p_adj = float(pad_adj.get("p", 0.0))
             a_adj = float(pad_adj.get("a", 0.0))
             d_adj = float(pad_adj.get("d", 0.0))
+
+            # Store structured lessons, anti-patterns, and tasks in semantic memory
+            lessons = parsed_data.get("lessons", [])
+            for lesson in lessons:
+                self.memory.semantic.store(text=lesson, metadata={"type": "lesson"})
+
+            anti_patterns = parsed_data.get("anti_patterns", [])
+            for anti_pattern in anti_patterns:
+                self.memory.semantic.store(text=anti_pattern, metadata={"type": "anti_pattern"})
+
+            proposed_tasks = parsed_data.get("proposed_tasks", [])
+            for task in proposed_tasks:
+                self.memory.semantic.store(text=task, metadata={"type": "proposed_task"})
+
         except (json.JSONDecodeError, ValueError, TypeError, AttributeError) as e:
             logging.error(f"Failed to parse subconscious reflection JSON: {e}")
 
@@ -104,7 +122,7 @@ class Subconsciousness:
         self.emotions.update(p_adj, a_adj, d_adj)
 
         self.memory.add_memory(
-            content=f"Subconscious reflection: {reflection_text}",
+            content=f"Subconscious reflection: {summary_text}",
             importance=0.4,
             emotional_state=self.emotions.state,
             tags=["reflection", "internal"]

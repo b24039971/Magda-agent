@@ -12,7 +12,10 @@ def mock_llm_client():
     mock.chat_completion.return_value = """
     ```json
     {
-        "reflection": "I am doing well and growing.",
+        "summary": "I am doing well and growing.",
+        "lessons": ["I should avoid hardcoding things."],
+        "anti_patterns": ["Ignoring exceptions."],
+        "proposed_tasks": ["Add more unit tests."],
         "pad_adjustment": {
             "p": 0.1,
             "a": -0.05,
@@ -34,6 +37,7 @@ def mock_memory_system():
     mock = MagicMock(spec=MemorySystem)
     mock.short_term = [MemoryEntry(content="Test content 1", timestamp=1000, importance=0.5, emotional_state=MagicMock())]
     mock.working = MagicMock()
+    mock.semantic = MagicMock()
     return mock
 
 @pytest.fixture
@@ -62,6 +66,13 @@ async def test_subconsciousness_reflect(subconsciousness, mock_llm_client, mock_
 
     # Verify emotions were updated with PARSED values
     mock_emotions.update.assert_called_once_with(0.1, -0.05, 0.15)
+
+    # Verify semantic memory was used to store structured info
+    assert mock_memory_system.semantic.store.call_count == 3
+    calls = mock_memory_system.semantic.store.call_args_list
+    assert calls[0].kwargs == {"text": "I should avoid hardcoding things.", "metadata": {"type": "lesson"}}
+    assert calls[1].kwargs == {"text": "Ignoring exceptions.", "metadata": {"type": "anti_pattern"}}
+    assert calls[2].kwargs == {"text": "Add more unit tests.", "metadata": {"type": "proposed_task"}}
 
     # Verify reflection was stored in memory
     mock_memory_system.add_memory.assert_called_once()
