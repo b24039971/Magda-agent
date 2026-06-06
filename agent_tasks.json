@@ -84,7 +84,7 @@
     },
     {
       "id": "salience-network",
-      "status": "todo",
+      "status": "done",
       "area": "cognition",
       "risk": "medium",
       "title": "Implement Salience Network",
@@ -167,6 +167,57 @@
         "lessons are stored separately from raw conversation",
         "recurring failures can create proposed tasks",
         "LLM calls remain mocked in tests"
+      ]
+    },
+    {
+      "id": "semantic-memory-vector-store",
+      "status": "todo",
+      "area": "memory",
+      "risk": "medium",
+      "title": "Implement Semantic Memory Vector Store",
+      "description": "Replace basic string matching with ChromaDB embeddings for better contextual retrieval.",
+      "allowed_paths": [
+        "magda_agent/memory/**",
+        "tests/test_memory_semantic.py",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "ChromaDB is used for storing semantic memory",
+        "Retrieval returns relevant semantic matches based on embedding distances"
+      ]
+    },
+    {
+      "id": "procedural-memory-tracker",
+      "status": "todo",
+      "area": "memory",
+      "risk": "medium",
+      "title": "Implement Procedural Memory Skill Tracker",
+      "description": "Store reusable skill execution paths to improve planner accuracy.",
+      "allowed_paths": [
+        "magda_agent/memory/**",
+        "tests/test_memory_procedural.py",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Procedural memory explicitly stores successful tool/skill methods",
+        "Planner has access to procedural memory during generation"
+      ]
+    },
+    {
+      "id": "task-action-telemetry",
+      "status": "todo",
+      "area": "reflection",
+      "risk": "low",
+      "title": "Add Task Action Trace Telemetry",
+      "description": "Track agent reasoning paths and tool usage frequency, inspired by Claude Code's telemetry.",
+      "allowed_paths": [
+        "magda_agent/metacognition/**",
+        "tests/test_telemetry.py",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Telemetry module logs usage frequency of tools",
+        "Reasoning paths are structurally recorded for later Subconscious reflection"
       ]
     }
   ]
