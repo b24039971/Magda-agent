@@ -1,5 +1,7 @@
 import logging
 from typing import List, Dict, Any, Optional
+from magda_agent.attention.salience import SalienceNetwork
+
 from magda_agent.llm_client import LLMClient
 from magda_agent.emotions.engine import EmotionalEngine
 from magda_agent.memory.storage import MemorySystem
@@ -37,7 +39,8 @@ class Consciousness:
         hypothalamus: Optional[Hypothalamus] = None,
         insula: Optional[Insula] = None,
         brainstem: Optional[Brainstem] = None,
-        pineal_gland: Optional[PinealGland] = None
+        pineal_gland: Optional[PinealGland] = None,
+        salience_network: Optional[SalienceNetwork] = None
     ):
         self.llm = llm
         self.emotions = emotions
@@ -54,12 +57,18 @@ class Consciousness:
         self.insula = insula
         self.brainstem = brainstem
         self.pineal_gland = pineal_gland
+        self.salience_network = salience_network
 
     async def process_input(self, user_input: str, user_id: Optional[int] = None) -> str:
         logging.info(f"Consciousness processing: {user_input}")
 
         if self.thalamus and not self.thalamus.filter_input(user_input):
             return "Message ignored by Thalamus."
+
+        if self.salience_network:
+            salience_result = self.salience_network.score_event(user_input)
+            logging.info(f"Salience score: {salience_result['score']} - {salience_result['explanation']}")
+
 
         # 0. Brainstem Autonomic Reflexes
         if self.brainstem:
