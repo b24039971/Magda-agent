@@ -1,24 +1,25 @@
 import pytest
-from magda_agent.memory.long_term import LongTermMemory
-from magda_agent.memory.storage import MemorySystem, MemoryEntry
-from magda_agent.learning.habits import HabitTracker
+from magda_agent.memory.semantic import SemanticMemory
+from magda_agent.memory.core import MemorySystem
+from magda_agent.memory.working import MemoryEntry
+from magda_agent.memory.procedural import ProceduralMemory
 from magda_agent.emotions.engine import PADState
 
 @pytest.fixture
 def memory_system():
-    return MemorySystem()
+    return MemorySystem(persist_directory=":memory:")
 
 @pytest.fixture
 def long_term_memory(tmp_path):
-    persist_dir = str(tmp_path / "test_long_term_user_db")
-    return LongTermMemory(persist_directory=persist_dir)
+    persist_dir = str(tmp_path / "test_semantic_user_db")
+    return SemanticMemory(persist_directory=persist_dir)
 
 @pytest.fixture
 def habit_tracker(tmp_path):
-    persist_dir = str(tmp_path / "test_habits_user_db")
-    return HabitTracker(persist_directory=persist_dir)
+    persist_dir = str(tmp_path / "test_procedural_user_db")
+    return ProceduralMemory(persist_directory=persist_dir)
 
-def test_long_term_memory_user_context(long_term_memory: LongTermMemory) -> None:
+def test_long_term_memory_user_context(long_term_memory: SemanticMemory) -> None:
     """Test that long-term memory isolates records correctly by user ID."""
     long_term_memory.store("User 1 secret", user_id=1)
     long_term_memory.store("User 2 secret", user_id=2)
@@ -51,7 +52,7 @@ def test_memory_system_user_context(memory_system: MemorySystem) -> None:
     assert len(results_user2) == 1
     assert results_user2[0].content == "Hello from user 2"
 
-def test_habit_tracker_user_context(habit_tracker: HabitTracker) -> None:
+def test_habit_tracker_user_context(habit_tracker: ProceduralMemory) -> None:
     """Test that habit tracking isolates records correctly by user ID."""
     # Train user 1 habit
     habit_tracker.record_usage("do the task", "skill_A", 9.0, user_id=1)

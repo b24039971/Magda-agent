@@ -4,17 +4,16 @@ import chromadb
 from typing import Optional, Dict
 from collections import Counter
 
-class HabitTracker:
+class ProceduralMemory:
     """
-    Cerebellum: Learning from habits.
+    Procedural Memory: Stores reusable successful procedures and methods (skills/habits).
     Analyzes patterns to find which skills are frequently used for typical requests
-    and receive high evaluation scores. Forms 'habits' - preferred strategies
-    using semantic similarity search.
+    and receive high evaluation scores.
     """
 
-    def __init__(self, persist_directory: str = "./habits_db") -> None:
+    def __init__(self, persist_directory: str = "./memory_procedural_db") -> None:
         """
-        Initializes the HabitTracker with a ChromaDB client.
+        Initializes the ProceduralMemory with a ChromaDB client.
 
         Args:
             persist_directory (str): The directory to persist ChromaDB data.
@@ -22,13 +21,12 @@ class HabitTracker:
         """
         if persist_directory == ":memory:":
             self.client = chromadb.EphemeralClient()
-            logging.info("Initialized HabitTracker with EphemeralClient")
+            logging.info("Initialized ProceduralMemory with EphemeralClient")
         else:
             self.client = chromadb.PersistentClient(path=persist_directory)
-            logging.info(f"Initialized HabitTracker with persistent directory: {persist_directory}")
+            logging.info(f"Initialized ProceduralMemory with persistent directory: {persist_directory}")
 
-        # We store successful habit mappings as documents in ChromaDB
-        self.collection = self.client.get_or_create_collection(name="habits")
+        self.collection = self.client.get_or_create_collection(name="procedural_memory")
 
     def record_usage(self, input_text: str, skill_used: str, evaluation_score: float, user_id: int = None) -> None:
         """
@@ -52,9 +50,9 @@ class HabitTracker:
                     metadatas=[metadata],
                     ids=[habit_id]
                 )
-                logging.info(f"Habit reinforced: Stored success for skill '{skill_used}' with input '{input_text[:20]}...'")
+                logging.info(f"Procedural memory reinforced: Stored success for skill '{skill_used}' with input '{input_text[:20]}...'")
             except Exception as e:
-                logging.error(f"Failed to record habit: {e}")
+                logging.error(f"Failed to record procedural memory: {e}")
 
     def suggest_strategy(self, input_text: str, user_id: int = None) -> Optional[str]:
         """
@@ -68,7 +66,6 @@ class HabitTracker:
             Optional[str]: The name of the suggested skill, or None if no strong habit exists.
         """
         try:
-            # Need to catch exception if collection is empty
             if self.collection.count() == 0:
                 return None
 
@@ -88,8 +85,6 @@ class HabitTracker:
             metadatas = results["metadatas"][0]
 
             valid_skills = []
-            # We set a threshold for distance (e.g., < 1.0 is reasonably close in Chroma defaults)
-            # A distance of 0.0 is an exact match. Let's use 1.0 as a threshold for semantic similarity.
             distance_threshold = 1.0
 
             for dist, meta in zip(distances, metadatas):
@@ -102,12 +97,18 @@ class HabitTracker:
             skill_counts = Counter(valid_skills)
             best_skill, max_count = skill_counts.most_common(1)[0]
 
-            # Require a threshold of success before suggesting (e.g., at least 2 successful uses)
             if max_count >= 2:
-                logging.info(f"Habit matched: Suggesting skill '{best_skill}' for input '{input_text[:20]}...'")
+                logging.info(f"Procedural memory matched: Suggesting skill '{best_skill}' for input '{input_text[:20]}...'")
                 return best_skill
 
             return None
         except Exception as e:
             logging.error(f"Failed to suggest strategy: {e}")
             return None
+
+    def close(self):
+        """Clean up the client on shutdown."""
+        try:
+            self.client.clear_system_cache()
+        except Exception:
+            pass

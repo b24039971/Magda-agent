@@ -9,14 +9,12 @@ from typing import Optional
 from magda_agent.llm_client import LLMClient
 from magda_agent.emotions.engine import EmotionalEngine
 from magda_agent.emotions.attachment import AttachmentModel
-from magda_agent.memory.storage import MemorySystem
+from magda_agent.memory.core import MemorySystem
 from magda_agent.skills import initialize_skills
 from magda_agent.planning.planner import Planner
 from magda_agent.consciousness.core import Consciousness
 from magda_agent.subconsciousness.reflection import Subconsciousness
-from magda_agent.memory.long_term import LongTermMemory
 from magda_agent.metacognition.evaluator import Evaluator
-from magda_agent.learning.habits import HabitTracker
 from magda_agent.thalamus.router import Thalamus
 from magda_agent.drives.hypothalamus import Hypothalamus
 from magda_agent.emotions.insula import Insula
@@ -28,11 +26,11 @@ logging.basicConfig(level=logging.INFO)
 
 llm_client = LLMClient()
 emotional_engine = EmotionalEngine()
-memory_system = MemorySystem()
+memory_system = MemorySystem(persist_directory="./memory_db")
 skill_registry = initialize_skills()
-habit_tracker = HabitTracker()
+habit_tracker = memory_system.procedural
 planner = Planner(llm=llm_client, skills=skill_registry, habit_tracker=habit_tracker)
-long_term_memory = LongTermMemory()
+long_term_memory = memory_system.semantic
 evaluator = Evaluator(llm=llm_client, memory=memory_system)
 attachment_model = AttachmentModel()
 thalamus = Thalamus()

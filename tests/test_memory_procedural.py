@@ -2,14 +2,14 @@ import pytest
 from unittest.mock import AsyncMock, MagicMock
 import json
 
-from magda_agent.learning.habits import HabitTracker
+from magda_agent.memory.procedural import ProceduralMemory
 from magda_agent.planning.planner import Planner
 from magda_agent.skills.registry import SkillRegistry
 from magda_agent.llm_client import LLMClient
 
 @pytest.fixture
 def habit_tracker():
-    return HabitTracker(persist_directory=":memory:")
+    return ProceduralMemory(persist_directory=":memory:")
 
 def test_habit_recording_and_suggestion(habit_tracker):
     # Initially no suggestion

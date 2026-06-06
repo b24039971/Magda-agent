@@ -3,7 +3,7 @@ import logging
 from typing import List, Dict, Any, Optional
 from magda_agent.llm_client import LLMClient
 from magda_agent.skills.registry import SkillRegistry
-from magda_agent.learning.habits import HabitTracker
+from magda_agent.memory.procedural import ProceduralMemory
 
 class Planner:
     """
@@ -12,7 +12,7 @@ class Planner:
     selecting which skills to use, and maintaining state.
     """
 
-    def __init__(self, llm: LLMClient, skills: SkillRegistry, habit_tracker: Optional[HabitTracker] = None):
+    def __init__(self, llm: LLMClient, skills: SkillRegistry, habit_tracker: Optional[ProceduralMemory] = None):
         self.llm = llm
         self.skills = skills
         self.habit_tracker = habit_tracker

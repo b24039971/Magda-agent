@@ -4,11 +4,11 @@ import sys
 import pytest
 from magda_agent.llm_client import LLMClient
 from magda_agent.emotions.engine import EmotionalEngine
-from magda_agent.memory.storage import MemorySystem
+from magda_agent.memory.core import MemorySystem
 from magda_agent.skills import initialize_skills
 from magda_agent.consciousness.core import Consciousness
 from magda_agent.subconsciousness.reflection import Subconsciousness
-from magda_agent.memory.long_term import LongTermMemory
+from magda_agent.memory.semantic import SemanticMemory
 
 @pytest.mark.asyncio
 async def test_integration():
@@ -22,11 +22,11 @@ async def test_integration():
 
     llm = MockLLMClient(api_key="test_key")
     emotions = EmotionalEngine()
-    memory = MemorySystem()
+    memory = MemorySystem(persist_directory=":memory:")
     skills = initialize_skills()
 
     # Use EphemeralClient for tests
-    long_term_memory = LongTermMemory(persist_directory=":memory:")
+    long_term_memory = memory.semantic
 
     consciousness = Consciousness(llm, emotions, memory, skills, long_term_memory=long_term_memory)
     subconsciousness = Subconsciousness(llm, emotions, memory, interval=1)
