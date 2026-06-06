@@ -171,7 +171,7 @@
     },
     {
       "id": "trends-mcp-integration",
-      "status": "todo",
+      "status": "done",
       "area": "skills",
       "risk": "medium",
       "title": "Integrate Model Context Protocol (MCP)",
@@ -362,6 +362,58 @@
       "acceptance": [
         "When subconsciousness reflects, it generates an artifact in the repo (e.g. artifacts/lesson_*.md).",
         "Artifact creation is testable without network calls."
+      ]
+    },
+    {
+      "id": "trends-schema-extractor",
+      "status": "todo",
+      "area": "skills",
+      "risk": "low",
+      "title": "Implement JSON Schema extraction from Tool Docstrings",
+      "description": "Inspired by OpenAI SDKs and Claude tools, dynamically generate JSON schema metadata from Python function type hints and docstrings to provide robust structured inputs for tools.",
+      "allowed_paths": [
+        "magda_agent/skills/schema_extractor.py",
+        "tests/test_schema_extractor.py",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Tool signatures are introspected dynamically to create strict JSON Schemas",
+        "SkillRegistry uses schema metadata to construct LLM system prompt context",
+        "Tests ensure schema validation matches type hints"
+      ]
+    },
+    {
+      "id": "trends-state-checkpointing",
+      "status": "todo",
+      "area": "memory",
+      "risk": "medium",
+      "title": "Implement State Checkpointing Context Manager",
+      "description": "Inspired by Claude Code and OpenAI's internal rollback loops, create a system to snapshot and pause execution state dynamically during multi-turn long-running tasks, allowing graceful resets.",
+      "allowed_paths": [
+        "magda_agent/memory/checkpoint.py",
+        "tests/test_checkpoint.py",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Execution state can be snapshotted to a dictionary or memory layer",
+        "Context manager handles automatic rollback on specific unrecoverable tool failures"
+      ]
+    },
+    {
+      "id": "trends-diff-analyzer",
+      "status": "todo",
+      "area": "reflection",
+      "risk": "medium",
+      "title": "Subconscious Code Change Analyzer",
+      "description": "Inspired by OpenClaw's code analysis, add a reflection job that asynchronously parses Git diffs for potential regressions during execution, feeding warnings into the Working Memory.",
+      "allowed_paths": [
+        "magda_agent/metacognition/diff_analyzer.py",
+        "tests/test_diff_analyzer.py",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "DiffAnalyzer parses git diff output safely without invoking complex sandbox actions",
+        "Subconscious consolidation layer integrates the warnings"
       ]
     }
   ]
