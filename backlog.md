@@ -86,6 +86,7 @@
 ---
 
 ## ✅ Выполнено
+* [x] REFLECTION: Обновлено подсознание (Subconsciousness) для формирования структурированных итогов, уроков и анти-паттернов. (2026-06-05)
 * [x] SECURITY: Добавить whitelist для Telegram-пользователей (2026-06-03)
 * [x] BUG: Обработка асинхронных ошибок в main.py (2026-06-03)
 * [x] FEATURE: Поиск в интернете через DuckDuckGo (2026-06-03)
@@ -105,11 +106,6 @@
   Обработка голосовых сообщений: Speech-to-Text (openai/whisper-tiny) и Text-to-Speech (microsoft/speecht5_tts).
   Методы `stt(audio_path)` и `tts(text, output_path)`.
   Интеграция: main.py перехватывает voice, использует processor, обращается к Consciousness API, и возвращает ответ голосом.
-* [x] MODULE: **Subconsciousness (Подсознание)** — модуль `magda_agent/subconsciousness/reflection.py`. (2025-02-14)
-  Фоновые процессы рефлексии и консолидации памяти.
-  Метод `reflect()` — анализ недавних событий и корректировка эмоций, консолидация памяти.
-  Интеграция: Вызывается периодически как фоновая задача.
-  Тесты: mock LLM, проверить что рефлексия запускается и `memory.consolidate()` вызывается.
 * [x] IMPROVEMENT: Implement gracefully shutdown for `MemorySystem`'s ephemeral ChromaDB client to prevent resource leaks. Add `close()` method to `MemorySystem` and call it in `api.py` lifespan shutdown. (2026-06-04)
 * [x] IMPROVEMENT: In `Subconsciousness.reflect`, the LLM prompt for reflection could be more structured to consistently receive PAD adjustments that are then parsed and applied, rather than just hardcoding a dominance increase. (2026-06-04)
 * [x] IMPROVEMENT: `MemorySystem` has a `long_term` list which seems redundant if `LongTermMemory` module is also used. Need to unify long-term memory storage.
